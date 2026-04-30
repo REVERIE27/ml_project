@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Score Predictor</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #000000, #563d00);
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* LEFT SIDE */
+        .left {
+            flex: 1;
+            padding: 60px;
+            animation: fadeIn 1s ease;
+        }
+
+        .left h1 {
+            font-size: 42px;
+            color: #ccc;
+        }
+
+        .left span {
+            color: #4f7cff;
+        }
+
+        .features {
+            margin-top: 30px;
+            color: #ccc;
+        }
+
+        .features p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .image {
+            margin-top: 40px;
+        }
+
+        .image img {
+            width: 80%;
+            border-radius: 20px;
+            transition: transform 0.4s ease;
+        }
+
+        .image img:hover {
+            transform: scale(1.05);
+        }
+
+        /* RIGHT SIDE */
+        .right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* FORM CARD */
+        .card {
+            background: #ead7ba;
+            padding: 50px;
+            width: 460px;
+            border-radius: 18px;
+            box-shadow: 0 17px 42px rgba(195, 226, 127, 0.1);
+            animation: fadeIn 1s ease;
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: Goudy Old Style, Garamond, Big Caslon, Times New Roman, serif;
+            font-size: 50px;
+        }
+
+        label {
+            display: block;
+            margin-top: 14px;
+            font-size: 16px;
+            /* ↑ bigger text */
+            font-weight: 500;
+            /* slightly bold */
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            margin-top: 6px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #4f7cff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(79, 124, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #4f7cff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #3a66d1;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* RESULT */
+        .result {
+            margin-top: 23px;
+            font-size: 23px;
+            color: green;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- LEFT -->
+        <div class="left">
+            <h1>AI Score <br> <span>Predictor 2026</span></h1>
+
+            <div class="features">
+                <p>✔ Predict performance accurately</p>
+                <p>✔ Analyze study habits</p>
+                <p>✔ Improve your results</p>
+            </div>
+
+            <div class="image">
+                <img src="{{ url_for('static', filename='images/mlprjct4.avif') }}" alt="Students">
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right">
+            <div class="card">
+                <h2>📊 Predictor</h2>
+
+                <form method="POST">
+                    <label>Hours Studied</label>
+                    <input type="number" name="hours" step="any" required>
+
+                    <label>Sleep Hours</label>
+                    <input type="number" name="sleep" step="any" required>
+
+                    <label>Previous Score</label>
+                    <input type="number" name="previous" step="any" required>
+
+                    <button type="submit">Predict</button>
+                </form>
+
+                {% if prediction is not none %}
+                <div class="result">
+                    Score: {{ prediction }}
+                </div>
+
+                <div class="message">
+                    {% if prediction >= 80 %}
+                    🌟 Excellent performance!
+                    {% elif prediction >= 60 %}
+                    👍 Good, keep improving!
+                    {% else %}
+                    ⚠️ Needs improvement
+                    {% endif %}
+                </div>
+
+                <!-- CHART -->
+                <canvas id="scoreChart"></canvas>
+
+                <script>
+                    const ctx = document.getElementById('scoreChart');
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Predicted Score'],
+                            datasets: [{
+                                label: 'Score',
+                                data: [{{ prediction }}]
+                        }]
+                    },
+                        options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                    });
+                </script>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
